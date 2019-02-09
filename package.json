@@ -1,0 +1,9 @@
+{
+  "name": "socket-test-server",
+  "version": "0.0.0",
+  "description": "SocketTestServer",
+  "main": "server.js",
+  "author": {
+    "name": ""
+  }
+}
