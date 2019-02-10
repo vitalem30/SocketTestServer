@@ -154,6 +154,7 @@ function process_incoming(data) {
             delete_from_list(word[0]);
             break;
         default:
+            console.log('dont knwo what to do with' + word[2]);
             break;
     }
 }
