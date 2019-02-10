@@ -141,7 +141,7 @@ function process_incoming(data) {
             var sess = new Object();
             sess["mac"] = word[0];
             sess["start"] = new Date();
-            sess["ip"] = raddr;
+            //sess["ip"] = raddr;
             sess_list.push(sess);                        
             break;
         case "STOP":
