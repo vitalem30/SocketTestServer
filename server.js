@@ -139,7 +139,7 @@ function process_incoming(data) {
     console.log('word1:' + word[1]);
     console.log('word2:' + word[2]);
     switch (word[2]) {
-        case 'START':
+        case "START":
             //process mac
             console.log('Add MAC to list:' + word[0]);
             var sess = new Object();
@@ -149,7 +149,7 @@ function process_incoming(data) {
             sess_list.push(sess);            
             setTimeout(checkSocketStillActive, 3600, word[0]);
             break;
-        case 'STOP':
+        case "STOP":
             console.log('Remove MAC to list:' + word[0]);
             delete_from_list(word[0]);
             break;
