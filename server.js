@@ -189,7 +189,7 @@ function test() {
 
 function checkSocketExpired()
 {
-    var now ;
+    var now = new Date();
     if (!sess_list) {
         console.log('no active sessions');
         return;
