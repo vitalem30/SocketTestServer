@@ -186,7 +186,7 @@ function checkSocketExpired()
 {
     var now ;
 
-    if (sess_list != length) {
+    if (!sess_list) {
         console.log('no active sessions');
         return;
     }   
