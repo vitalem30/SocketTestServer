@@ -3,7 +3,7 @@ var net = require('net');
 var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 var rport;
-//emitted when server closes ...not emitted until all connections closes.
+
 server.on('close', function () {
     console.log('Server closed !');
 });
@@ -18,25 +18,24 @@ server.on('connection', function (socket) {
     var family = address.family;
     var ipaddr = address.address;
     console.log('Server is listening at port ' + port);
-    console.log('Server ip :' + ipaddr);
-    console.log('Server is IP4/IP6 : ' + family);
+    //console.log('Server ip :' + ipaddr);
+    //console.log('Server is IP4/IP6 : ' + family);
 
     //var lport = socket.localPort;
     //var laddr = socket.localAddress;
     //console.log('Server is listening at LOCAL port' + lport);
     //console.log('Server LOCAL ip :' + laddr);
 
-    console.log('------------remote client info --------------');
+    //console.log('------------remote client info --------------');
     rport = socket.remotePort;
     var raddr = socket.remoteAddress;
     var rfamily = socket.remoteFamily;
 
     console.log('REMOTE Socket is listening at port' + rport);
-    console.log('REMOTE Socket ip :' + raddr);
+    //console.log('REMOTE Socket ip :' + raddr);
     //console.log('REMOTE Socket is IP4/IP6 : ' + rfamily);
 
-    console.log('--------------------------------------------')
-    //var no_of_connections =  server.getConnections(); // sychronous version
+    //console.log('--------------------------------------------')
     server.getConnections(function (error, count) {
         console.log('Number of concurrent connections to the server : ' + count);
     });
@@ -57,7 +56,7 @@ server.on('connection', function (socket) {
         //var bwrite = socket.bytesWritten;
         ////console.log('Bytes read : ' + bread);
         //console.log('Bytes written : ' + bwrite);
-        console.log('Data received : ' + data);
+        //console.log('Data received : ' + data);
         process_incoming(data);
         //echo data
         //var is_kernel_buffer_full = socket.write('Data ::' + data);
