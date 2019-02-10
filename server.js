@@ -2,7 +2,7 @@ var net = require('net');
 
 var sess_list = [];  //holding all client sessions
 var server = net.createServer();
-
+var rport;
 //emitted when server closes ...not emitted until all connections closes.
 server.on('close', function () {
     console.log('Server closed !');
@@ -17,23 +17,23 @@ server.on('connection', function (socket) {
     var port = address.port;
     var family = address.family;
     var ipaddr = address.address;
-    console.log('Server is listening at port' + port);
+    console.log('Server is listening at port ' + port);
     console.log('Server ip :' + ipaddr);
     console.log('Server is IP4/IP6 : ' + family);
 
-    var lport = socket.localPort;
-    var laddr = socket.localAddress;
-    console.log('Server is listening at LOCAL port' + lport);
-    console.log('Server LOCAL ip :' + laddr);
+    //var lport = socket.localPort;
+    //var laddr = socket.localAddress;
+    //console.log('Server is listening at LOCAL port' + lport);
+    //console.log('Server LOCAL ip :' + laddr);
 
     console.log('------------remote client info --------------');
-    var rport = socket.remotePort;
+    rport = socket.remotePort;
     var raddr = socket.remoteAddress;
     var rfamily = socket.remoteFamily;
 
     console.log('REMOTE Socket is listening at port' + rport);
     console.log('REMOTE Socket ip :' + raddr);
-    console.log('REMOTE Socket is IP4/IP6 : ' + rfamily);
+    //console.log('REMOTE Socket is IP4/IP6 : ' + rfamily);
 
     console.log('--------------------------------------------')
     //var no_of_connections =  server.getConnections(); // sychronous version
@@ -43,13 +43,13 @@ server.on('connection', function (socket) {
 
     socket.setEncoding('utf8');
     
-    socket.setTimeout(10*60*1000, function () {
-        // called after timeout -> same as socket.on('timeout')
-        // it just tells that soket timed out => its ur job to end or destroy the socket.
-        // socket.end() vs socket.destroy() => end allows us to send final data and allows some i/o activity to finish before destroying the socket
-        // whereas destroy kills the socket immediately irrespective of whether any i/o operation is goin on or not...force destry takes place
-        console.log('Socket timed out');
-    });
+    //socket.setTimeout(10*60*1000, function () {
+    //    // called after timeout -> same as socket.on('timeout')
+    //    // it just tells that soket timed out => its ur job to end or destroy the socket.
+    //    // socket.end() vs socket.destroy() => end allows us to send final data and allows some i/o activity to finish before destroying the socket
+    //    // whereas destroy kills the socket immediately irrespective of whether any i/o operation is goin on or not...force destry takes place
+    //    console.log('Socket timed out');
+    //});
 
 
     socket.on('data', function (data) {
@@ -84,8 +84,8 @@ server.on('connection', function (socket) {
     });
 
     socket.on('end', function (data) {
-        console.log('Socket ended from other end!');
-        console.log('End data : ' + data);
+        //console.log('Socket ended from other end!');
+        //console.log('End data : ' + data);
     });
 
     socket.on('close', function (error) {
@@ -142,7 +142,7 @@ function process_incoming(data) {
             var sess = new Object();
             sess["mac"] = word[0];
             sess["start"] = new Date();
-            //sess["ip"] = raddr;
+            sess["port"] = rport;
             sess_list.push(sess);                        
             break;
         case "STOP":
@@ -156,11 +156,11 @@ function process_incoming(data) {
 }
 
 function delete_from_list(mac) {
-    console.log('delete:' + mac);
+    //console.log('delete:' + mac);
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
-            console.log('mac found , deleted!');
             delete sess_list[i];
+            console.log('Remaining:' + sess_list.length);
             return;
         }        
     } 
@@ -190,15 +190,15 @@ function test() {
 function checkSocketExpired()
 {
     var now = new Date();
-    if (!sess_list) {
+    if (!sess_list.length) {
         console.log('no active sessions');
         return;
     }
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 360) {
-            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             delete sess_list[i];            
+            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length+')');
         }
         //else
         //    console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
