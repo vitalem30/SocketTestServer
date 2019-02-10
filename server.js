@@ -43,8 +43,7 @@ server.on('connection', function (socket) {
     });
 
     socket.setEncoding('utf8');
-    testmap();
-
+    
     socket.setTimeout(800000, function () {
         // called after timeout -> same as socket.on('timeout')
         // it just tells that soket timed out => its ur job to end or destroy the socket.
@@ -57,8 +56,8 @@ server.on('connection', function (socket) {
     socket.on('data', function (data) {
         var bread = socket.bytesRead;
         var bwrite = socket.bytesWritten;
-        console.log('Bytes read : ' + bread);
-        console.log('Bytes written : ' + bwrite);
+        //console.log('Bytes read : ' + bread);
+        //console.log('Bytes written : ' + bwrite);
         console.log('Data sent to server : ' + data);
 
         process_incoming(data);
@@ -124,7 +123,6 @@ server.maxConnections = 100;
 
 //static port allocation
 server.listen(8080);
-//testmap();
 var islistening = server.listening;
 
 if (islistening) {
@@ -137,10 +135,13 @@ if (islistening) {
 
 function process_incoming(data) {
     var word = data.split('@');
+    console.log('word0:' + word[0]);
+    console.log('word1:' + word[1]);
+    console.log('word2:' + word[2]);
     switch (word[2]) {
         case 'START':
             //process mac
-            console.log('Add MAC to list:' + word[2]);
+            console.log('Add MAC to list:' + word[0]);
             var sess = new Object();
             sess["mac"] = word[0];
             sess["start"] = word[1];;
@@ -174,15 +175,18 @@ function print_list() {
         console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
     } 
 }
-function testmap() {
+function test() {
 
-    var item = { "mac": 'jccods', "start": '13:43', "ip": '192.168.2.11' };
-    sess_list.push(item);
-    item = { "mac": 'j1234', "start": '17:43', "ip": '3333.168.2.11' };
-    sess_list.push(item);
-    print_list();
-    delete_from_list('jccods');
-    print_list();
+    //var item = { "mac": 'jccods', "start": '13:43', "ip": '192.168.2.11' };
+    //sess_list.push(item);
+    //item = { "mac": 'j1234', "start": '17:43', "ip": '3333.168.2.11' };
+    //sess_list.push(item);
+    //print_list();
+    //delete_from_list('jccods');
+    //print_list();
+
+    //process_incoming('FP00112A217D97@10:09@START');
+    //process_incoming('FP00112A217D97@10:09@STOP');
 }
 
 function checkSocketStillActive(mac)
@@ -195,4 +199,5 @@ function checkSocketStillActive(mac)
             return;
         }
     } 
+    console.log('socket test successful for:'+mac);
 }
