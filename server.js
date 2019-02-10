@@ -1,4 +1,5 @@
 var net = require('net');
+//var Map = require("collections/map");
 
 // creates the server
 var server = net.createServer();
@@ -122,11 +123,11 @@ server.maxConnections = 100;
 
 //static port allocation
 server.listen(8080);
-
+testmap();
 var islistening = server.listening;
 
 if (islistening) {
-    console.log('Server is listening. Yihoo');
+    console.log('Server is listening. Yahoo');
 } 
 //setTimeout(function () {
 //    server.close();
@@ -134,7 +135,7 @@ if (islistening) {
 
 
 function process_incoming(data) {
-    var word = lines[i].split('@');
+    var word = data.split('@');
     switch (word[2]) {
         case 'START':
             //process mac
@@ -146,19 +147,14 @@ function process_incoming(data) {
         default:
             break;
     }
-
-
 }
 
-//var map = new Map({ a: 1, b: 2 });
-//map.set("c", 3);
-//// true
-//map.toObject();
-//// {"a":1,"b":2,"c":3}
-//var key = { x: "hello" };
-//map.set(key, 4);
-//// true
-//map.get(key);
-//// 4
-//map.entries();
-//// [["a",1],["b",2],["c",3],[{"x":"hello"},4]]
+function MacMatch(mac) {
+    return mac == 18;
+}
+function testmap() {
+
+    var fruits = ["Banana", "Orange", "Apple", "Mango"];
+    fruits.splice(2, 0, "Lemon", "Kiwi");
+    //fruits.find("Orange");
+}
