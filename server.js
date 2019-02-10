@@ -144,6 +144,7 @@ function process_incoming(data) {
             sess["start"] = new Date();
             sess["port"] = rport;
             sess_list.push(sess);                        
+            // '(Remaining:' + sess_list.length - 1 + ')'
             break;
         case "STOP":
             console.log('Remove MAC to list:' + word[0]);
@@ -159,7 +160,8 @@ function delete_from_list(mac) {
     //console.log('delete:' + mac);
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
-            delete sess_list[i];
+            //delete sess_list[i];
+            sess_list.splice(i, 1);
             console.log('Remaining:' + sess_list.length);
             return;
         }        
@@ -197,8 +199,9 @@ function checkSocketExpired()
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 360) {
-            delete sess_list[i];            
-            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length+')');
+            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length-1 + ')');
+            //delete sess_list[i];
+            sess_list.splice(i,1);
         }
         //else
         //    console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
