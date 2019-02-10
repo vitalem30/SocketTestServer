@@ -138,7 +138,7 @@ function process_incoming(data) {
     console.log('word0:' + word[0]);
     console.log('word1:' + word[1]);
     console.log('word2:' + word[2]);
-    switch (word[2]) {
+    switch (word[0]) {
         case 'START':
             //process mac
             console.log('Add MAC to list:' + word[0]);
@@ -151,7 +151,7 @@ function process_incoming(data) {
             break;
         case 'STOP':
             console.log('Remove MAC to list:' + word[0]);
-            delete_from_list(word[2]);
+            delete_from_list(word[0]);
             break;
         default:
             break;
