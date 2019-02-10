@@ -128,22 +128,16 @@ setInterval(checkSocketExpired, 60000);
 
 function process_incoming(data) {
     var word = data.split('@');
-    //console.log('word0:' + word[0]);
-    //console.log('word1:' + word[1]);
-    //console.log('word2:' + word[2]);
     var action = word[1];
     console.log('action:' + action);
-
     switch (action) {
         case "START":
-            //process mac
             console.log('Add MAC to list:' + word[0]);
             var sess = new Object();
             sess["mac"] = word[0];
             sess["start"] = new Date();
             sess["port"] = rport;
             sess_list.push(sess);                        
-            // '(Remaining:' + sess_list.length - 1 + ')'
             break;
         case "STOP":
             console.log('Remove MAC to list:' + word[0]);
@@ -173,20 +167,6 @@ function print_list() {
         console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
     } 
 }
-//test();
-function test() {
-
-    //var item = { "mac": 'jccods', "start": '13:43', "ip": '192.168.2.11' };
-    //sess_list.push(item);
-    //item = { "mac": 'j1234', "start": '17:43', "ip": '3333.168.2.11' };
-    //sess_list.push(item);
-    //print_list();
-    //delete_from_list('jccods');
-    //print_list();
-
-    //process_incoming('FP00112A217D97@10:09@START');
-    process_incoming('FP00112A217D97@10:09@STOP');
-}
 
 function checkSocketExpired()
 {
@@ -197,12 +177,10 @@ function checkSocketExpired()
     }
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
-        if (elapsed > 360) {
+        if (elapsed > 320) {
             console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length-1 + ')');
             //delete sess_list[i];
             sess_list.splice(i,1);
         }
-        //else
-        //    console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
     }     
 }
