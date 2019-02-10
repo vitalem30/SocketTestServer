@@ -74,7 +74,8 @@ server.on('connection', function (socket) {
     });
 
     socket.on('error', function (error) {
-        console.log('Error : ' + error);
+        console.err('socket Error : ' + error);
+        console.err('socket remortport: ' + socket.remotePort);       
     });
 
     socket.on('timeout', function () {
@@ -108,7 +109,7 @@ server.on('connection', function (socket) {
 
 // emits when any error occurs -> calls closed event immediately after this.
 server.on('error', function (error) {
-    console.log('Error: ' + error);
+    console.log('Server Error: ' + error);  
 });
 
 //emits when server is bound with server.listen
@@ -189,19 +190,17 @@ function test() {
 function checkSocketExpired()
 {
     var now ;
-
     if (!sess_list) {
         console.log('no active sessions');
         return;
-    }   
-    
+    }
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
-        if (elapsed > 3600) {
+        if (elapsed > 300) {
             console.err('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             delete sess_list[i];            
         }
         else
-            console.info('still ok for ' + sess_list[i].mac);
+            console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
     }     
 }
