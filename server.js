@@ -132,7 +132,7 @@ function process_incoming(data) {
     //console.log('word0:' + word[0]);
     //console.log('word1:' + word[1]);
     //console.log('word2:' + word[2]);
-    var action = word[1].toString();
+    var action = word[1];
     console.log('action:' + action);
 
     switch (action) {
@@ -196,7 +196,7 @@ function checkSocketExpired()
     }
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
-        if (elapsed > 300) {
+        if (elapsed > 360) {
             console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             delete sess_list[i];            
         }
