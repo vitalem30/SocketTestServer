@@ -74,8 +74,8 @@ server.on('connection', function (socket) {
     });
 
     socket.on('error', function (error) {
-        console.err('socket Error : ' + error);
-        console.err('socket remortport: ' + socket.remotePort);       
+        console.error('socket Error : ' + error);
+        console.error('socket remortport: ' + socket.remotePort);       
     });
 
     socket.on('timeout', function () {
@@ -129,9 +129,9 @@ setInterval(checkSocketExpired, 60000);
 
 function process_incoming(data) {
     var word = data.split('@');
-    console.log('word0:' + word[0]);
-    console.log('word1:' + word[1]);
-    console.log('word2:' + word[2]);
+    //console.log('word0:' + word[0]);
+    //console.log('word1:' + word[1]);
+    //console.log('word2:' + word[2]);
     var action = word[1].toString();
     console.log('action:' + action);
 
@@ -197,10 +197,10 @@ function checkSocketExpired()
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 300) {
-            console.err('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
+            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             delete sess_list[i];            
         }
-        else
-            console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
+        //else
+        //    console.info('still ok for ' + sess_list[i].mac+'(elapsed '+elapsed+'s');
     }     
 }
