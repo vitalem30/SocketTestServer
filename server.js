@@ -131,7 +131,10 @@ function process_incoming(data) {
     console.log('word0:' + word[0]);
     console.log('word1:' + word[1]);
     console.log('word2:' + word[2]);
-    switch (word[2]) {
+    var action = word[2].toString();
+    console.log('action:' + action);
+
+    switch (action) {
         case "START":
             //process mac
             console.log('Add MAC to list:' + word[0]);
@@ -146,7 +149,7 @@ function process_incoming(data) {
             delete_from_list(word[0]);
             break;
         default:
-            console.log('dont know what to do with' + word[2]);
+            console.log('dont know what to do with:' + word[2]+'.');
             break;
     }
 }
@@ -168,6 +171,7 @@ function print_list() {
         console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
     } 
 }
+//test();
 function test() {
 
     //var item = { "mac": 'jccods', "start": '13:43', "ip": '192.168.2.11' };
@@ -179,7 +183,7 @@ function test() {
     //print_list();
 
     //process_incoming('FP00112A217D97@10:09@START');
-    //process_incoming('FP00112A217D97@10:09@STOP');
+    process_incoming('FP00112A217D97@10:09@STOP');
 }
 
 function checkSocketExpired()
