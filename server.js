@@ -138,7 +138,7 @@ function process_incoming(data) {
     console.log('word0:' + word[0]);
     console.log('word1:' + word[1]);
     console.log('word2:' + word[2]);
-    switch (word[0]) {
+    switch (word[2]) {
         case 'START':
             //process mac
             console.log('Add MAC to list:' + word[0]);
