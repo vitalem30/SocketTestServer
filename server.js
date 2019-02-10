@@ -1,6 +1,6 @@
 var net = require('net');
 //var Map = require("collections/map");
-
+var sess_list = [];
 // creates the server
 var server = net.createServer();
 
@@ -43,6 +43,7 @@ server.on('connection', function (socket) {
     });
 
     socket.setEncoding('utf8');
+    testmap();
 
     socket.setTimeout(800000, function () {
         // called after timeout -> same as socket.on('timeout')
@@ -123,7 +124,7 @@ server.maxConnections = 100;
 
 //static port allocation
 server.listen(8080);
-testmap();
+//testmap();
 var islistening = server.listening;
 
 if (islistening) {
@@ -140,21 +141,58 @@ function process_incoming(data) {
         case 'START':
             //process mac
             console.log('Add MAC to list:' + word[2]);
+            var sess = new Object();
+            sess["mac"] = word[0];
+            sess["start"] = word[1];;
+            sess["ip"] = raddr;
+            sess_list.push(sess);            
+            setTimeout(checkSocketStillActive, 3600, word[0]);
             break;
         case 'STOP':
-            console.log('Remove MAC to list:' + word[2]);
+            console.log('Remove MAC to list:' + word[0]);
+            delete_from_list(word[2]);
             break;
         default:
             break;
     }
 }
 
-function MacMatch(mac) {
-    return mac == 18;
+function delete_from_list(mac) {
+    console.log('delete:' + mac);
+    for (i in sess_list) {
+        if (sess_list[i].mac == mac) {
+            console.log('mac found , deleted!');
+            delete sess_list[i];
+            return;
+        }        
+    } 
+}
+
+function print_list() {
+    console.log('print_list:' + sess_list.length);
+    for (i in sess_list) {
+        console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
+    } 
 }
 function testmap() {
 
-    var fruits = ["Banana", "Orange", "Apple", "Mango"];
-    fruits.splice(2, 0, "Lemon", "Kiwi");
-    //fruits.find("Orange");
+    var item = { "mac": 'jccods', "start": '13:43', "ip": '192.168.2.11' };
+    sess_list.push(item);
+    item = { "mac": 'j1234', "start": '17:43', "ip": '3333.168.2.11' };
+    sess_list.push(item);
+    print_list();
+    delete_from_list('jccods');
+    print_list();
+}
+
+function checkSocketStillActive(mac)
+{
+    console.log('checkSocketStillActive:' + mac);
+    for (i in sess_list) {
+        if (sess_list[i].mac == mac) {
+            console.err('SOCKET ISSUE DETECTED FOR '+mac);
+            delete sess_list[i];
+            return;
+        }
+    } 
 }
