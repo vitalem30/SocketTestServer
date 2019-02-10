@@ -1,7 +1,6 @@
 var net = require('net');
-//var Map = require("collections/map");
-var sess_list = [];
-// creates the server
+
+var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 
 //emitted when server closes ...not emitted until all connections closes.
@@ -44,7 +43,7 @@ server.on('connection', function (socket) {
 
     socket.setEncoding('utf8');
     
-    socket.setTimeout(800000, function () {
+    socket.setTimeout(10*60*1000, function () {
         // called after timeout -> same as socket.on('timeout')
         // it just tells that soket timed out => its ur job to end or destroy the socket.
         // socket.end() vs socket.destroy() => end allows us to send final data and allows some i/o activity to finish before destroying the socket
@@ -54,12 +53,11 @@ server.on('connection', function (socket) {
 
 
     socket.on('data', function (data) {
-        var bread = socket.bytesRead;
-        var bwrite = socket.bytesWritten;
-        //console.log('Bytes read : ' + bread);
+        //var bread = socket.bytesRead;
+        //var bwrite = socket.bytesWritten;
+        ////console.log('Bytes read : ' + bread);
         //console.log('Bytes written : ' + bwrite);
-        console.log('Data sent to server : ' + data);
-
+        console.log('Data received : ' + data);
         process_incoming(data);
         //echo data
         //var is_kernel_buffer_full = socket.write('Data ::' + data);
@@ -68,7 +66,6 @@ server.on('connection', function (socket) {
         //} else {
         //    socket.pause();
         //}
-
     });
 
     socket.on('drain', function () {
@@ -91,21 +88,21 @@ server.on('connection', function (socket) {
     });
 
     socket.on('close', function (error) {
-        var bread = socket.bytesRead;
-        var bwrite = socket.bytesWritten;
-        console.log('Bytes read : ' + bread);
-        console.log('Bytes written : ' + bwrite);
+        //var bread = socket.bytesRead;
+        //var bwrite = socket.bytesWritten;
+        //console.log('Bytes read : ' + bread);
+        //console.log('Bytes written : ' + bwrite);
         console.log('Socket closed!');
         if (error) {
             console.log('Socket was closed coz of transmission error');
         }
     });
 
-    setTimeout(function () {
-        var isdestroyed = socket.destroyed;
-        console.log('Socket destroyed:' + isdestroyed);
-        socket.destroy();
-    }, 1200000);
+    //setTimeout(function () {
+    //    var isdestroyed = socket.destroyed;
+    //    console.log('Socket destroyed:' + isdestroyed);
+    //    socket.destroy();
+    //}, 1200000);
 
 });
 
@@ -120,14 +117,10 @@ server.on('listening', function () {
 });
 
 server.maxConnections = 100;
-
-//static port allocation
 server.listen(8080);
-var islistening = server.listening;
 
-if (islistening) {
-    console.log('Server is listening. Yahoo');
-} 
+
+setInterval(checkSocketExpired, 60000);
 //setTimeout(function () {
 //    server.close();
 //}, 5000000);
@@ -144,17 +137,16 @@ function process_incoming(data) {
             console.log('Add MAC to list:' + word[0]);
             var sess = new Object();
             sess["mac"] = word[0];
-            sess["start"] = word[1];;
+            sess["start"] = new Date();
             sess["ip"] = raddr;
-            sess_list.push(sess);            
-            setTimeout(checkSocketStillActive, 3600, word[0]);
+            sess_list.push(sess);                        
             break;
         case "STOP":
             console.log('Remove MAC to list:' + word[0]);
             delete_from_list(word[0]);
             break;
         default:
-            console.log('dont knwo what to do with' + word[2]);
+            console.log('dont know what to do with' + word[2]);
             break;
     }
 }
@@ -190,15 +182,22 @@ function test() {
     //process_incoming('FP00112A217D97@10:09@STOP');
 }
 
-function checkSocketStillActive(mac)
+function checkSocketExpired()
 {
-    console.log('checkSocketStillActive:' + mac);
+    var now ;
+
+    if (sess_list != length) {
+        console.log('no active sessions');
+        return;
+    }   
+    
     for (i in sess_list) {
-        if (sess_list[i].mac == mac) {
-            console.err('SOCKET ISSUE DETECTED FOR '+mac);
-            delete sess_list[i];
-            return;
+        var elapsed = Math.round(now - sess_list[i].start)/1000;
+        if (elapsed > 3600) {
+            console.err('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
+            delete sess_list[i];            
         }
-    } 
-    console.log('socket test successful for:'+mac);
+        else
+            console.info('still ok for ' + sess_list[i].mac);
+    }     
 }
