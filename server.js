@@ -131,7 +131,7 @@ function process_incoming(data) {
     console.log('word0:' + word[0]);
     console.log('word1:' + word[1]);
     console.log('word2:' + word[2]);
-    var action = word[2].toString();
+    var action = word[1].toString();
     console.log('action:' + action);
 
     switch (action) {
@@ -149,7 +149,7 @@ function process_incoming(data) {
             delete_from_list(word[0]);
             break;
         default:
-            console.log('dont know what to do with:' + word[2]+'.');
+            console.log('dont know what to do with:' + word[1]+'.');
             break;
     }
 }
