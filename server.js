@@ -62,7 +62,7 @@ server.on('connection', function (socket) {
 
         process_incoming(data);
         //echo data
-        i//var is_kernel_buffer_full = socket.write('Data ::' + data);
+        //var is_kernel_buffer_full = socket.write('Data ::' + data);
         //if (is_kernel_buffer_full) {
         //    console.log('Data was flushed successfully from kernel buffer i.e written successfully!');
         //} else {
