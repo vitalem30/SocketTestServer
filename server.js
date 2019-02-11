@@ -65,6 +65,7 @@ server.on('connection', function (socket) {
         //} else {
         //    socket.pause();
         //}
+        
     });
 
     socket.on('drain', function () {
@@ -84,7 +85,7 @@ server.on('connection', function (socket) {
 
     socket.on('end', function (data) {
         //console.log('Socket ended from other end!');
-        //console.log('End data : ' + data);
+        console.log('End data : ' + data);
     });
 
     socket.on('close', function (error) {
@@ -153,7 +154,6 @@ function delete_from_list(mac) {
     //console.log('delete:' + mac);
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
-            //delete sess_list[i];
             sess_list.splice(i, 1);
             console.log('Remaining:' + sess_list.length);
             return;
@@ -179,7 +179,6 @@ function checkSocketExpired()
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
             console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length-1 + ')');
-            //delete sess_list[i];
             sess_list.splice(i,1);
         }
     }     
