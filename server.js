@@ -84,8 +84,8 @@ server.on('connection', function (socket) {
     });
 
     socket.on('end', function (data) {
-        //console.log('Socket ended from other end!');
-        console.log('End data : ' + data);
+        console.log('Socket ended from other end!');
+        //console.log('End data : ' + data);
     });
 
     socket.on('close', function (error) {
@@ -133,12 +133,14 @@ function process_incoming(data) {
     console.log('action:' + action);
     switch (action) {
         case "START":
-            console.log('Add MAC to list:' + word[0]);
-            var sess = new Object();
-            sess["mac"] = word[0];
-            sess["start"] = new Date();
-            sess["port"] = rport;
-            sess_list.push(sess);                        
+            if (!find_in_list(word[0])) {
+                console.log('Add MAC to list:' + word[0]);
+                var sess = new Object();
+                sess["mac"] = word[0];
+                sess["start"] = new Date();
+                sess["port"] = rport;
+                sess_list.push(sess);                        
+            }
             break;
         case "STOP":
             console.log('Remove MAC to list:' + word[0]);
@@ -168,6 +170,20 @@ function print_list() {
     } 
 }
 
+function find_in_list(mac) {
+    //console.log('find_in_list:' + mac);
+    if (!sess_list.length) {
+        //console.log('list empty');
+        return 0;
+    }
+    for (i in sess_list) {
+        if (sess_list[i].mac == mac) {
+            console.log('duplicate found, ignore mac' + mac);
+            return 1;
+        }
+    }
+    return 0;
+}
 function checkSocketExpired()
 {
     var now = new Date();
@@ -181,7 +197,9 @@ function checkSocketExpired()
         if (elapsed > 320) {
            
             console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length  + ')');
-            sess_list.splice(i,1);
+            sess_list.splice(i, 1);
         }
-    }     
+    }
+    console.error('Remaining:' + sess_list.length + ')');
+        
 }
