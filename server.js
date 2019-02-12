@@ -3,6 +3,7 @@ var net = require('net');
 var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 var rport;
+var cntOK, cntTotal, cntNok;
 
 server.on('close', function () {
     console.log('Server closed !');
@@ -138,13 +139,15 @@ function process_incoming(data) {
                 sess["mac"] = word[0];
                 sess["start"] = new Date();
                 sess["port"] = rport;
-                sess_list.push(sess);                    
-                console.log('Add MAC to list:' + word[0] + ' , Remaining:' + sess_list.length);
+                sess_list.push(sess);        
+                cntTotal++;
+                console.log('Add MAC to list:' + word[0] + ' , Remaining:' + sess_list.length + 'Total:' + cntTotal + ',OK:' + cntOK + ',cntNok:' + cntNok);
             }
             break;
         case "STOP":
             delete_from_list(word[0]);
-            console.log('Remove MAC from list:' + word[0] + ' , Remaining:' + sess_list.length);
+            cntOK++;
+            console.log('Remove MAC from list:' + word[0] + ' , Remaining:' + sess_list.length + 'Total:' + cntTotal + ',OK:' + cntOK + ',cntNok:' + cntNok);
             break;
         default:
             console.log('dont know what to do with:' + word[1]+'.');
@@ -195,10 +198,10 @@ function checkSocketExpired()
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
-           
+            cntNok++
             console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             sess_list.splice(i, 1);
         }
     }
-    console.error('Remaining:' + sess_list.length);        
+    console.error('Remaining:' + sess_list.length + 'Total:'+cntTotal+',OK:'+cntOK+',cntNok:'+cntNok);        
 }
