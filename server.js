@@ -179,7 +179,9 @@ function checkSocketExpired()
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
-            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length-1 + ')');
+            console.error('SOCKET ISSUE DETECTED FOR ');
+
+            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length  + ')');
             sess_list.splice(i,1);
         }
     }     
