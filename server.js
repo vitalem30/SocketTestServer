@@ -18,7 +18,7 @@ server.on('connection', function (socket) {
     var port = address.port;
     var family = address.family;
     var ipaddr = address.address;
-    c//onsole.log('Server is listening at port ' + port);
+    //console.log('Server is listening at port ' + port);
     //console.log('Server ip :' + ipaddr);
     //console.log('Server is IP4/IP6 : ' + family);
 
