@@ -11,13 +11,13 @@ server.on('close', function () {
 // emitted when new client connects
 server.on('connection', function (socket) {
 
-    console.log('---------server details -----------------');
+   // console.log('---------server details -----------------');
 
     var address = server.address();
     var port = address.port;
     var family = address.family;
     var ipaddr = address.address;
-    console.log('Server is listening at port ' + port);
+    c//onsole.log('Server is listening at port ' + port);
     //console.log('Server ip :' + ipaddr);
     //console.log('Server is IP4/IP6 : ' + family);
 
@@ -31,7 +31,7 @@ server.on('connection', function (socket) {
     var raddr = socket.remoteAddress;
     var rfamily = socket.remoteFamily;
 
-    console.log('REMOTE Socket is listening at port' + rport);
+    //console.log('REMOTE Socket is listening at port' + rport);
     //console.log('REMOTE Socket ip :' + raddr);
     //console.log('REMOTE Socket is IP4/IP6 : ' + rfamily);
 
@@ -130,21 +130,21 @@ setInterval(checkSocketExpired, 60000);
 function process_incoming(data) {
     var word = data.split('@');
     var action = word[1];
-    console.log('action:' + action);
+    //console.log('action:' + action);
     switch (action) {
         case "START":
             if (!find_in_list(word[0])) {
-                console.log('Add MAC to list:' + word[0]);
                 var sess = new Object();
                 sess["mac"] = word[0];
                 sess["start"] = new Date();
                 sess["port"] = rport;
-                sess_list.push(sess);                        
+                sess_list.push(sess);                    
+                console.log('Add MAC to list:' + word[0] + ' , Remaining:' + sess_list.length);
             }
             break;
         case "STOP":
-            console.log('Remove MAC to list:' + word[0]);
             delete_from_list(word[0]);
+            console.log('Remove MAC from list:' + word[0] + ' , Remaining:' + sess_list.length);
             break;
         default:
             console.log('dont know what to do with:' + word[1]+'.');
@@ -153,11 +153,11 @@ function process_incoming(data) {
 }
 
 function delete_from_list(mac) {
-    console.log('delete:' + mac);
+    //console.log('delete:' + mac);
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
             sess_list.splice(i, 1);
-            console.log('Remaining:' + sess_list.length);
+            //console.log('Remaining:' + sess_list.length);
             return;
         }        
     } 
@@ -178,7 +178,7 @@ function find_in_list(mac) {
     }
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
-            console.log('duplicate found, ignore mac' + mac);
+            console.log('duplicate found, ignore mac ' + mac);
             return 1;
         }
     }
@@ -196,10 +196,9 @@ function checkSocketExpired()
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
            
-            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac + '(Remaining:' + sess_list.length  + ')');
+            console.error('SOCKET ISSUE DETECTED FOR ' + sess_list[i].mac);
             sess_list.splice(i, 1);
         }
     }
-    console.error('Remaining:' + sess_list.length + ')');
-        
+    console.error('Remaining:' + sess_list.length);        
 }
