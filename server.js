@@ -3,7 +3,7 @@ var net = require('net');
 var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 var rport;
-var cntOK, cntTotal, cntNok;
+var cntOK = 0, cntTotal = 0, cntNok = 0;
 
 server.on('close', function () {
     console.log('Server closed !');
