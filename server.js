@@ -151,7 +151,7 @@ function process_incoming(data) {
 }
 
 function delete_from_list(mac) {
-    //console.log('delete:' + mac);
+    console.log('delete:' + mac);
     for (i in sess_list) {
         if (sess_list[i].mac == mac) {
             sess_list.splice(i, 1);
@@ -175,6 +175,7 @@ function checkSocketExpired()
         console.log('no active sessions');
         return;
     }
+    console.log('expired');
     for (i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
