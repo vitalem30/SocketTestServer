@@ -6,7 +6,7 @@ var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 var rport;
 var raddr;
-var cntOK = 0, cntTotal = 0, cntNok = 0;
+var cntStop = 0, cntStart = 0, cntNok = 0;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -128,7 +128,7 @@ server.on('listening', function () {
     console.log('Server is listening!');
 });
 
-server.maxConnections = 100;
+server.maxConnections = 500;
 server.listen(8080);
 //setTimeout(function () {
 //    server.close();
@@ -151,14 +151,14 @@ function process_incoming(data) {
             else 
                 update_session(mac, interval)
 
-            cntTotal++;
-            console.log('Start '+ interval+ ' interval for MAC:' + mac + ' , Remaining:' + sess_list.length + ',Total:' + cntTotal + ',OK:' + cntOK + ',NOK:' + cntNok);
+            cntStart++;
+            console.log('Start ' + interval + ' interval for MAC:' + mac + '(Status: ' + cntStop +'/'+ cntStart+')');
             break;
         case "STOP":
             //delete_from_list(word[0]);
             update_session(mac, interval);
-            cntOK++;
-            console.log('Stop ' + interval+ 'interval for MAC:' + mac + ' , Remaining:' + sess_list.length + ',Total:' + cntTotal + ',OK:' + cntOK + ',NOK:' + cntNok);
+            cntStop++;
+            console.log('Stop ' + interval + 'interval for MAC:' + mac + '(Status: ' + cntStop + '/' + cntStart + ')');
             break;
         default:
             console.error('dont know what to do with:' + action);
@@ -217,12 +217,8 @@ function delete_from_list(mac) {
     } 
 }
 
-function print_list() {
-    console.log('print_list:' + sess_list.length);
-    for (var i in sess_list) {
-        console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
-    } 
-    console.log("FULL" + JSON.stringify(sess_list));
+function print_list() {   
+    console.log("sessions:" + JSON.stringify(sess_list));
 }
 
 function update_session(mac, interval) {
@@ -246,9 +242,9 @@ function find_in_list(mac) {
         return null;
     }
     for (var i in sess_list) {
-        console.log('now looking at ' + sess_list[i].mac);
+    //    console.log('now looking at ' + sess_list[i].mac);
         if (sess_list[i].mac == mac) {
-            console.log('found');
+      //      console.log('found');
             return i;
         }
     }
@@ -270,7 +266,7 @@ function checkSocketExpired()
             sess_list.splice(i, 1);
         }
     }
-    console.error('Remaining:' + sess_list.length + ',Total:'+cntTotal+',OK:'+cntOK+',NOK:'+cntNok);        
+    console.error('Remaining:' + sess_list.length + ',Total:'+cntStart+',OK:'+cntStop+',NOK:'+cntNok);        
 }
 
 
@@ -278,8 +274,7 @@ rl.on('line', (input) => {
     console.log(`Received: ${input}`);
     if (input === 'p')
         print_list();
+    else if (input === 's')
+        fs.writeFileSync('sessions.json', JSON.stringify(sess_list));
 });
 
-
-//let data = JSON.stringify(student);
-//fs.writeFileSync('stude=nt-2.json', data);  
