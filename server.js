@@ -1,9 +1,19 @@
+'use strict';
+const fs = require('fs');
 var net = require('net');
-
+const readline = require('readline');
 var sess_list = [];  //holding all client sessions
 var server = net.createServer();
 var rport;
+var raddr;
 var cntOK = 0, cntTotal = 0, cntNok = 0;
+
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+    prompt: 'SOCKET> '
+});
+
 
 server.on('close', function () {
     console.log('Server closed !');
@@ -29,7 +39,7 @@ server.on('connection', function (socket) {
 
     //console.log('------------remote client info --------------');
     rport = socket.remotePort;
-    var raddr = socket.remoteAddress;
+    raddr = socket.remoteAddress;
     var rfamily = socket.remoteFamily;
 
     //console.log('REMOTE Socket is listening at port' + rport);
@@ -120,44 +130,85 @@ server.on('listening', function () {
 
 server.maxConnections = 100;
 server.listen(8080);
-
-
-setInterval(checkSocketExpired, 60000);
 //setTimeout(function () {
 //    server.close();
 //}, 5000000);
 
 
+//setInterval(checkSocketExpired, 60000);
+
+
 function process_incoming(data) {
     var word = data.split('@');
+    var mac = word[0];
     var action = word[1];
-    //console.log('action:' + action);
+    var interval = word[2];
+    console.log('action:' + action + ' of mac '+ mac);
     switch (action) {
         case "START":
-            if (!find_in_list(word[0])) {
-                var sess = new Object();
-                sess["mac"] = word[0];
-                sess["start"] = new Date();
-                sess["port"] = rport;
-                sess_list.push(sess);        
-                cntTotal++;
-                console.log('Add MAC to list:' + word[0] + ' , Remaining:' + sess_list.length + 'Total:' + cntTotal + ',OK:' + cntOK + ',cntNok:' + cntNok);
-            }
+            if (!find_in_list(mac)) 
+                create_new_session(mac, interval);
+            else 
+                update_session(mac, interval)
+
+            cntTotal++;
+            console.log('Start '+ interval+ ' interval for MAC:' + mac + ' , Remaining:' + sess_list.length + ',Total:' + cntTotal + ',OK:' + cntOK + ',NOK:' + cntNok);
             break;
         case "STOP":
-            delete_from_list(word[0]);
+            //delete_from_list(word[0]);
+            update_session(mac, interval);
             cntOK++;
-            console.log('Remove MAC from list:' + word[0] + ' , Remaining:' + sess_list.length + 'Total:' + cntTotal + ',OK:' + cntOK + ',cntNok:' + cntNok);
+            console.log('Stop ' + interval+ 'interval for MAC:' + mac + ' , Remaining:' + sess_list.length + ',Total:' + cntTotal + ',OK:' + cntOK + ',NOK:' + cntNok);
             break;
         default:
-            console.log('dont know what to do with:' + word[1]+'.');
+            console.error('dont know what to do with:' + action);
             break;
     }
 }
 
+function create_new_session(mac, interval) {
+    console.log('create_new_session: ' + mac + ',interval:' + interval);
+    var sess = new Object();
+    sess["mac"] = mac;
+    sess["start"] = new Date();
+    sess["port"] = rport;
+    sess["rip"] = raddr;
+    sess["1"] = 0;
+    sess["2"] = 0;
+    sess["3"] = 0;
+    sess["4"] = 0;
+    sess["5"] = 0;
+
+    update_interval(sess, interval, 1);
+    sess_list.push(sess);
+}
+
+function update_interval(sess,interval, value){
+    switch (interval) {
+        case '1':
+            sess["1"] = value;
+            break;
+        case '2':
+            sess["2"] = value;
+            break;
+        case '3':
+            sess["3"] = value;
+            break;
+        case '4':
+            sess["4"] = value;
+            break;
+        case '5':
+            sess["5"] = value;
+            break;
+        default:
+            console.error('unknown interval received:' + interval);
+    }
+}
+
+
 function delete_from_list(mac) {
     //console.log('delete:' + mac);
-    for (i in sess_list) {
+    for (var i in sess_list) {
         if (sess_list[i].mac == mac) {
             sess_list.splice(i, 1);
             //console.log('Remaining:' + sess_list.length);
@@ -168,24 +219,40 @@ function delete_from_list(mac) {
 
 function print_list() {
     console.log('print_list:' + sess_list.length);
-    for (i in sess_list) {
+    for (var i in sess_list) {
         console.log('mac=' + sess_list[i].mac + ',ip:' + sess_list[i].ip);
     } 
+    console.log("FULL" + JSON.stringify(sess_list));
+}
+
+function update_session(mac, interval) {
+
+    for (var i in sess_list) {
+        console.log('now looking at ' + sess_list[i].mac);
+        if (sess_list[i].mac == mac) {
+            update_interval(sess_list[i], interval, 2);
+
+            console.log('found');
+            return;
+        }
+    }
+    return;
 }
 
 function find_in_list(mac) {
-    //console.log('find_in_list:' + mac);
+    console.log('find_in_list:' + mac);
     if (!sess_list.length) {
-        //console.log('list empty');
-        return 0;
+        console.log('list empty');
+        return null;
     }
-    for (i in sess_list) {
+    for (var i in sess_list) {
+        console.log('now looking at ' + sess_list[i].mac);
         if (sess_list[i].mac == mac) {
-            console.log('duplicate found, ignore mac ' + mac);
-            return 1;
+            console.log('found');
+            return i;
         }
     }
-    return 0;
+    return null;
 }
 function checkSocketExpired()
 {
@@ -195,7 +262,7 @@ function checkSocketExpired()
         return;
     }
     console.log('time:'+now);
-    for (i in sess_list) {
+    for (var i in sess_list) {
         var elapsed = Math.round(now - sess_list[i].start)/1000;
         if (elapsed > 320) {
             cntNok++
@@ -203,5 +270,16 @@ function checkSocketExpired()
             sess_list.splice(i, 1);
         }
     }
-    console.error('Remaining:' + sess_list.length + 'Total:'+cntTotal+',OK:'+cntOK+',cntNok:'+cntNok);        
+    console.error('Remaining:' + sess_list.length + ',Total:'+cntTotal+',OK:'+cntOK+',NOK:'+cntNok);        
 }
+
+
+rl.on('line', (input) => {
+    console.log(`Received: ${input}`);
+    if (input === 'p')
+        print_list();
+});
+
+
+//let data = JSON.stringify(student);
+//fs.writeFileSync('stude=nt-2.json', data);  
