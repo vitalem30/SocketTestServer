@@ -143,7 +143,7 @@ function process_incoming(data) {
     var mac = word[0];
     var action = word[1];
     var interval = word[2];
-    console.log('action:' + action + ' of mac '+ mac);
+    //console.log('action:' + action + ' of mac '+ mac );
     switch (action) {
         case "START":
             if (!find_in_list(mac)) 
@@ -224,11 +224,10 @@ function print_list() {
 function update_session(mac, interval) {
 
     for (var i in sess_list) {
-        console.log('now looking at ' + sess_list[i].mac);
+        //console.log('now looking at ' + sess_list[i].mac);
         if (sess_list[i].mac == mac) {
             update_interval(sess_list[i], interval, 2);
-
-            console.log('found');
+            //console.log('found');
             return;
         }
     }
@@ -236,7 +235,7 @@ function update_session(mac, interval) {
 }
 
 function find_in_list(mac) {
-    console.log('find_in_list:' + mac);
+    //console.log('find_in_list:' + mac);
     if (!sess_list.length) {
         console.log('list empty');
         return null;
@@ -271,7 +270,7 @@ function checkSocketExpired()
 
 
 rl.on('line', (input) => {
-    console.log(`Received: ${input}`);
+    //console.log(`Received: ${input}`);
     if (input === 'p')
         print_list();
     else if (input === 's')
