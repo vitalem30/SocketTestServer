@@ -178,6 +178,8 @@ function create_new_session(mac, interval) {
     sess["3"] = 0;
     sess["4"] = 0;
     sess["5"] = 0;
+    sess["6"] = 0;
+    sess["7"] = 0;
 
     update_interval(sess, interval, 1);
     sess_list.push(sess);
@@ -199,6 +201,12 @@ function update_interval(sess,interval, value){
             break;
         case '5':
             sess["5"] = value;
+            break;
+        case '6':
+            sess["6"] = value;
+            break;
+        case '7':
+            sess["7"] = value;
             break;
         default:
             console.error('unknown interval received:' + interval);
